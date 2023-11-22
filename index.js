@@ -34,7 +34,8 @@ class Component extends HTMLElement {
           this.shadow.getElementById("result").innerHTML = viz
 
         };
-        img.src = "./horse_r.png"
+        // img.src = "./horse_r.png"
+        img.src = "./bin.png"
         // img.src = "./opencv-thinning-src-img.png"
         // img.src = "./example2.BMP"
       })
