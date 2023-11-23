@@ -14,7 +14,31 @@
           return exist.includes(current) ? param[current] : exist.includes("en") ? param["en"] : param[exist[0]]
         } else return ""
       }
+      
+      async function pathToImageData(imagePath) {
+        return new Promise((res, rej) => {
+          try {
+            const canvas = document.createElement("canvas")
+            const ctx = canvas.getContext("2d")
+            document.createElement("canvas").getContext("2d")
+            const img = new Image()
+            img.onload = () => {
+              canvas.width = img.width
+              canvas.height = img.height
+              ctx.drawImage(img, 0, 0)
+              const imageData = ctx.getImageData(0, 0, img.width, img.height)
+              console.log(imageData)
+              res(imageData)
+            }
+            img.src = imagePath
+          } catch (e) {
+            rej(JSON.stringify(e))
+          }
+        })
+      }
 
+      const res = await pathToImageData("bin.png")
+      console.log("res", res)
       const element = document.querySelector("skeleton-tracing")
       element.subscribe((snapshot) => setTimeout(() => console.log(snapshot), 1000))
 
