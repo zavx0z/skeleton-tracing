@@ -6,8 +6,17 @@
     <script src="https://zavx0z.github.io/dev-tools/index.js" type="module" async></script>
     <dev-tools mobile></dev-tools>
     <script src="./index.js" type="module" defer></script>
+    <script type="module">
+      const element = document.querySelector("skeleton-tracing")
+      const template = document.querySelector("template")
+      element.parentElement.insertBefore(template.content, element)
+    </script>
   </head>
   <body>
     <skeleton-tracing></skeleton-tracing>
   </body>
+  <template>
+    <h1>skeleton-tracing</h1>
+    <img src="./bin.png" alt="source image" />
+  </template>
 </html>

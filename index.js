@@ -1,51 +1,62 @@
 // https://github.com/LingDong-/skeleton-tracing/tree/master/wasm
-// import example from "./example.jpg"
-
 const html = String.raw
-
 class Component extends HTMLElement {
   name = "skeleton-tracing"
-  input = {}
-  output = {}
+  input = {
+    img: {
+      name: { ru: "Бинарное изображение" },
+      description: { ru: "" },
+      type: "String",
+      value: "",
+    },
+  }
+  output = {
+    img: {
+      name: { ru: "Центральная линия" },
+      description: { ru: "Векторизованное изображение" },
+      type: "String",
+      value: "",
+    },
+  }
   property = {}
-  static observedAttributes = []
+  static observedAttributes = ['src']
   constructor() {
     super()
     this.shadow = this.attachShadow({ mode: "closed" })
-    this.shadow.innerHTML = html`
-     <h1>skeleton-tracing</h1> 
-     <canvas></canvas>
-     <div id='result'></div>
-    `
-    import("https://cdn.jsdelivr.net/npm/skeleton-tracing-wasm/build/trace_skeleton_wasm.js").then(module => {
+  }
+  connectedCallback() {
+    this.render()
+  }
+  attributeChangedCallback(attrName, oldValue, newValue) {
+    console.log(attrName)
+  }
+  render() {
+    import("https://cdn.jsdelivr.net/npm/skeleton-tracing-wasm/build/trace_skeleton_wasm.min.js").then(() => {
       TraceSkeleton.load().then((tracer) => {
-        const canvas = this.shadow.querySelector("canvas")
-        const ctx = canvas.getContext("2d");
-        const img = new Image();
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext("2d")
+        const img = new Image()
         img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
+          canvas.width = img.width
+          canvas.height = img.height
           ctx.drawImage(img, 0, 0)
-          const result = tracer.fromCanvas(this.shadow.querySelector("canvas"))
-          // const { polylines, rects } = result
+          const result = tracer.fromCanvas(canvas)
 
-          console.log(result)
           const viz = tracer.visualize(result)
-          this.shadow.getElementById("result").innerHTML = viz
-
-        };
-        // img.src = "./horse_r.png"
+          this.shadow.innerHTML = viz
+          canvas.remove()
+        }
         img.src = "./bin.png"
-        // img.src = "./opencv-thinning-src-img.png"
-        // img.src = "./example2.BMP"
       })
     })
   }
-  draw() {
+  send(message) {
+    this.render()
   }
-
-  render() { }
-  connectedCallback() { }
-  attributeChangedCallback(attrName, oldValue, newValue) { }
+  subscriptions = []
+  subscribe(cb) {
+    this.subscriptions.push(cb)
+    return () => this.subscriptions.unshift(cb)
+  }
 }
 customElements.define("skeleton-tracing", Component)
