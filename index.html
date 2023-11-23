@@ -1,19 +1,28 @@
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>skeleton-tracing</title>
-    <script src="https://zavx0z.github.io/dev-tools/index.js" type="module" async></script>
-    <dev-tools mobile></dev-tools>
-    <script src="index.js" type="module" defer></script>
     <script type="module">
+      await new Promise((res) => import("https://zavx0z.github.io/dev-tools/index.js").then(() => setTimeout(res, 200)))
+      await import("./index.js")
+
+      function i18n(param) {
+        if (param && typeof param === "object") {
+          const current = document.documentElement.lang
+          const exist = Object.keys(param)
+          return exist.includes(current) ? param[current] : exist.includes("en") ? param["en"] : param[exist[0]]
+        } else return ""
+      }
+
       const element = document.querySelector("skeleton-tracing")
       element.subscribe((snapshot) => setTimeout(() => console.log(snapshot), 1000))
 
       const template = document.querySelector("template")
-      template.content.querySelector("h1").innerHTML = element.name.ru
+      template.content.querySelector("h1").innerHTML = i18n(element.name)
       element.parentElement.insertBefore(template.content, element)
     </script>
+    <dev-tools mobile></dev-tools>
   </head>
   <body>
     <skeleton-tracing preview src="bin.png"></skeleton-tracing>

@@ -6,7 +6,7 @@ class Component extends HTMLElement {
   description = { ru: "", en: "" }
   input = {
     img: {
-      name: { ru: "Бинарное изображение" },
+      name: { ru: "Бинарное изображение", "en": "Binary image" },
       description: { ru: "" },
       type: "String",
       variant: "Path",
@@ -41,9 +41,13 @@ class Component extends HTMLElement {
   constructor() {
     super()
     this.shadow = this.attachShadow({ mode: "closed" })
-    setTimeout(() => {
-      console.log(this.property.preview.value, this.hasAttribute("preview"), typeof this.getAttribute("preview"), this.getAttribute("preview"))
-    }, 1000)
+    console.log(
+      "constructor",
+      this.property.preview.value,
+      this.hasAttribute("preview"),
+      typeof this.getAttribute("preview"),
+      this.getAttribute("preview")
+    )
   }
   connectedCallback() {
     this.render("./bin.png")
@@ -56,9 +60,7 @@ class Component extends HTMLElement {
       default:
         break
     }
-    setTimeout(() => {
-      console.log(attrName, oldValue, typeof newValue, this.hasAttribute("preview"))
-    }, 1000)
+    console.log(attrName, oldValue, typeof newValue, this.hasAttribute("preview"))
   }
   render(src) {
     import("https://cdn.jsdelivr.net/npm/skeleton-tracing-wasm/build/trace_skeleton_wasm.min.js").then(() => {
@@ -72,7 +74,7 @@ class Component extends HTMLElement {
           ctx.drawImage(img, 0, 0)
           const result = tracer.fromCanvas(canvas)
           const viz = tracer.visualize(result)
-          setTimeout(()=>console.log(this.property.preview.value), 1000)
+          setTimeout(() => console.log(this.property.preview.value), 1000)
           if (this.hasAttribute("preview")) this.shadow.innerHTML = viz
           canvas.remove()
           this.subscriptions.forEach((cb) => cb({ polylines: result.polylines, svg: viz }))
@@ -81,7 +83,7 @@ class Component extends HTMLElement {
       })
     })
   }
-  mailbox = [] 
+  mailbox = []
   send({ src }) {
     this.render(src)
   }
