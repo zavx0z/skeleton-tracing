@@ -14,12 +14,12 @@
           return exist.includes(current) ? param[current] : exist.includes("en") ? param["en"] : param[exist[0]]
         } else return ""
       }
-      
+
       async function pathToImageData(imagePath) {
         return new Promise((res, rej) => {
+          const canvas = document.createElement("canvas")
           try {
-            const canvas = document.createElement("canvas")
-            const ctx = canvas.getContext("2d")
+            const ctx = canvas.getContext("2d", { willReadFrequently: true })
             document.createElement("canvas").getContext("2d")
             const img = new Image()
             img.onload = () => {
@@ -27,32 +27,42 @@
               canvas.height = img.height
               ctx.drawImage(img, 0, 0)
               const imageData = ctx.getImageData(0, 0, img.width, img.height)
-              console.log(imageData)
-              res(imageData)
+              res({ img, imageData })
             }
             img.src = imagePath
           } catch (e) {
             rej(JSON.stringify(e))
+          } finally {
+            canvas.remove()
           }
         })
       }
 
-      const res = await pathToImageData("bin.png")
-      console.log("res", res)
+      const { img, imageData } = await pathToImageData("bin.png")
+
       const element = document.querySelector("skeleton-tracing")
-      element.subscribe((snapshot) => setTimeout(() => console.log(snapshot), 1000))
+      element.subscribe((snapshot) => {
+        // console.log(snapshot.svg)
+        const resultSvg = document.getElementById("resultSvg")
+        const svgEl = new DOMParser().parseFromString(snapshot.svg, "application/xml")
+        resultSvg.appendChild(resultSvg.ownerDocument.importNode(svgEl.documentElement, true))
+      })
+
+      element.send({ imageData, preview: true })
+      // setTimeout(() => element.send(imageData), 4444)
 
       const template = document.querySelector("template")
       template.content.querySelector("h1").innerHTML = i18n(element.name)
+      template.content.appendChild(img)
       element.parentElement.insertBefore(template.content, element)
     </script>
     <dev-tools mobile></dev-tools>
   </head>
   <body>
-    <skeleton-tracing preview src="bin.png"></skeleton-tracing>
+    <skeleton-tracing></skeleton-tracing>
   </body>
   <template>
     <h1></h1>
-    <img src="bin.png" alt="source image" />
+    <div id="resultSvg"></div>
   </template>
 </html>
