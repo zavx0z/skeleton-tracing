@@ -4,65 +4,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>skeleton-tracing</title>
     <script type="module">
+      import { pathToImageData, i18n, nodeFabric } from "./utils.js"
       await new Promise((res) => import("https://zavx0z.github.io/dev-tools/index.js").then(() => setTimeout(res, 200)))
       await import("./index.js")
-
-      function i18n(param) {
-        if (param && typeof param === "object") {
-          const current = document.documentElement.lang
-          const exist = Object.keys(param)
-          return exist.includes(current) ? param[current] : exist.includes("en") ? param["en"] : param[exist[0]]
-        } else return ""
-      }
-
-      async function pathToImageData(imagePath) {
-        return new Promise((res, rej) => {
-          const canvas = document.createElement("canvas")
-          try {
-            const ctx = canvas.getContext("2d", { willReadFrequently: true })
-            document.createElement("canvas").getContext("2d")
-            const img = new Image()
-            img.onload = () => {
-              canvas.width = img.width
-              canvas.height = img.height
-              ctx.drawImage(img, 0, 0)
-              const imageData = ctx.getImageData(0, 0, img.width, img.height)
-              res({ img, imageData })
-            }
-            img.src = imagePath
-          } catch (e) {
-            rej(JSON.stringify(e))
-          } finally {
-            canvas.remove()
-          }
-        })
-      }
-
       const { img, imageData } = await pathToImageData("bin.png")
 
       const element = document.querySelector("skeleton-tracing")
+      
       element.subscribe((snapshot) => {
-        // console.log(snapshot.svg)
         const resultSvg = document.getElementById("resultSvg")
         const svgEl = new DOMParser().parseFromString(snapshot.svg, "application/xml")
         resultSvg.appendChild(resultSvg.ownerDocument.importNode(svgEl.documentElement, true))
       })
-
       element.send({ imageData, preview: true })
-      // setTimeout(() => element.send(imageData), 4444)
-
-      const template = document.querySelector("template")
-      template.content.querySelector("h1").innerHTML = i18n(element.name)
-      template.content.appendChild(img)
-      element.parentElement.insertBefore(template.content, element)
+      
+      const content = nodeFabric(element)
+      document.body.appendChild(content)
     </script>
     <dev-tools mobile></dev-tools>
   </head>
   <body>
     <skeleton-tracing></skeleton-tracing>
-  </body>
-  <template>
-    <h1></h1>
     <div id="resultSvg"></div>
-  </template>
+  </body>
 </html>
