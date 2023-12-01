@@ -1,5 +1,4 @@
 // https://github.com/LingDong-/skeleton-tracing/tree/master/wasm
-const html = String.raw
 import { visualize } from "./lib/draw.js"
 
 class Component extends HTMLElement {
@@ -7,33 +6,15 @@ class Component extends HTMLElement {
   name = { ru: "Центральная линия", en: "skeleton-tracing" }
   description = { ru: "", en: "" }
   input = {
-    img: {
-      name: { ru: "Бинарное изображение", en: "Binary image" },
-      description: { ru: "" },
-      type: "String",
-      variant: "Path",
-      value: "",
-    },
+    1701380269254: "", //"Бинарное изображение"
   }
   output = {
-    polylines: {
-      name: { ru: "Массив точек линий" },
-      description: { ru: "" },
-      type: "Array.Array.Number",
-      variant: "JS",
-      value: [],
-    },
-    svg: {
-      name: { ru: "Центральная линия" },
-      description: { ru: "Векторизованное изображение" },
-      type: "String",
-      variant: "SVG",
-      value: "",
-    },
+    1701435712847: [[]], // "Массив точек линий"
+    1701435696745: "", //"Центральная линия"
   }
   property = {
     preview: {
-      name: { ru: "Предпросмотр" },
+      label: { ru: "Предпросмотр" },
       description: { ru: "" },
       type: "Boolean",
       value: true,
@@ -43,20 +24,21 @@ class Component extends HTMLElement {
     super()
     this.shadow = this.attachShadow({ mode: "closed" })
   }
+  attributeChangedCallback(attrName, oldValue, newValue) {}
   connectedCallback() {}
   render({ imageData }) {
     import("https://cdn.jsdelivr.net/npm/skeleton-tracing-wasm/build/trace_skeleton_wasm.min.js").then(() => {
       TraceSkeleton.load().then((tracer) => {
         const result = tracer.fromImageData(imageData)
         const viz = tracer.visualize(result)
-        if (this.property.preview.value) this.shadow.innerHTML = viz
+        if (this.style.display !== "none") this.shadow.innerHTML = viz
         const vizResult = visualize(result.polylines, result.width, result.height, 1, 4)
+        console.log(result)
         this.subscriptions.forEach((cb) => cb({ polylines: result.polylines, svg: vizResult }))
       })
     })
   }
   send({ imageData, preview }) {
-    console.log(preview)
     this.property.preview.value = !!preview
     this.render({ imageData })
   }

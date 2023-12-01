@@ -31,24 +31,40 @@ export function i18n(param) {
 const html = String.raw
 
 export function nodeFabric(actor) {
+  console.log(actor.input)
+  Object.keys(actor.input).map(async (key) => {
+    const res = await fetch(`https://zavx0z.github.io/everywhere-everything/where/${key}.xml`)
+    const data = await res.text()
+    const parser = new DOMParser()
+    const xmlDoc = parser.parseFromString(data, "text/xml")
+    console.log(xmlDoc.querySelector("Type"))
+  })
+  console.log(actor.output)
   const template = document.createElement("template")
   template.innerHTML = html`
     <h1>${i18n(actor.name)}</h1>
     <form>
       ${Object.entries(actor.input)
         .map(([key, socket]) => {
-          switch (socket.type) {
+          switch (socket.field) {
             case "Boolean":
               return html`
                 <div>
                   <input type="checkbox" id="${key}" name="${key}" ${socket.value ? "checked" : ""} />
-                  <label for="${key}">${i18n(socket.name)}</label>
+                  <label for="${key}">${i18n(socket.label)}</label>
                 </div>
               `
-            case "String":
+            case "text":
               return html`
                 <div>
-                  <label for="${key}">${i18n(socket.name)}</label>
+                  <label for="${key}">${i18n(socket.label)}</label>
+                  <input type="text" id="${key}" name="${key}" />
+                </div>
+              `
+            case "textarea":
+              return html`
+                <div>
+                  <label for="${key}">${i18n(socket.label)}</label>
                   <textarea cols="80" rows="4" id="${key}" name="${key}"> ${socket.value} </textarea>
                 </div>
               `

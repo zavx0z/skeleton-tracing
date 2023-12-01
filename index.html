@@ -10,14 +10,14 @@
       const { img, imageData } = await pathToImageData("bin.png")
 
       const element = document.querySelector("skeleton-tracing")
-      
+
       element.subscribe((snapshot) => {
         const resultSvg = document.getElementById("resultSvg")
         const svgEl = new DOMParser().parseFromString(snapshot.svg, "application/xml")
         resultSvg.appendChild(resultSvg.ownerDocument.importNode(svgEl.documentElement, true))
       })
       element.send({ imageData, preview: true })
-      
+
       const content = nodeFabric(element)
       document.body.appendChild(content)
     </script>
