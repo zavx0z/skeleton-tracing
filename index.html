@@ -16,7 +16,7 @@
         const svgEl = new DOMParser().parseFromString(snapshot.svg, "application/xml")
         resultSvg.appendChild(resultSvg.ownerDocument.importNode(svgEl.documentElement, true))
       })
-      element.send({ imageData, preview: true })
+      element.send({ 1701380269254: imageData, preview: true })
 
       const content = nodeFabric(element)
       document.body.appendChild(content)
